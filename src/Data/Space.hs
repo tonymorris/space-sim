@@ -27,11 +27,14 @@ data Config =
     FilePath -- maps
   deriving (Eq, Show)
 
-main :: IO ()
+main ::
+  IO ()
 main = 
   run (Config "192.168.1.192" "5558" "5556" "5557" "/home/tmorris/Desktop/r/spacerace/maps")
 
-run :: Config -> IO ()
+run ::
+  Config
+  -> IO ()
 run (Config c rp sp pp mapdir) =
   let connectstring p = "tcp://" ++ c ++ ":" ++ p
       connectto s = connect s . connectstring
@@ -102,7 +105,11 @@ getCurrentState stateS = do
         Just s -> return s
         Nothing -> error "could not parse game state"
 
-getCommand :: String -> SpaceMap Double -> [Ship] -> Control
+getCommand ::
+  String
+  -> SpaceMap Double
+  -> [Ship]
+  -> Control
 getCommand s _ _ = Control s MainEngineOn None
 
 data Error =
@@ -112,9 +119,12 @@ data Log =
   Log
     String
 
+type Logs =
+  [Log]
+
 newtype SpaceT f a =
   SpaceT
-    (Config -> f ([Log], Either Error a))
+    (Config -> f (Logs, Either Error a))
 
 instance Functor f => Functor (SpaceT f) where
  fmap f (SpaceT s) =
@@ -140,3 +150,39 @@ type ZSpace z a =
   SpaceT (ZMQ z) a
 
 -- type Space a = SpaceT Identity a
+
+getConfig ::
+  Applicative f =>
+  SpaceT f Config
+getConfig =
+  SpaceT (\c -> pure ([], pure c))
+
+getHost ::
+  Applicative f =>
+  SpaceT f String
+getHost =
+  fmap (\(Config h _ _ _ _) -> h) getConfig
+
+getReqPort ::
+  Applicative f =>
+  SpaceT f String
+getReqPort =
+  fmap (\(Config _ rp _ _ _) -> rp) getConfig
+
+getSubPort ::
+  Applicative f =>
+  SpaceT f String
+getSubPort =
+  fmap (\(Config _ _ sp _ _) -> sp) getConfig
+
+getPushPort ::
+  Applicative f =>
+  SpaceT f String
+getPushPort =
+  fmap (\(Config _ _ _ pp _) -> pp) getConfig
+
+getMapsDirectory ::
+  Applicative f =>
+  SpaceT f String
+getMapsDirectory =
+  fmap (\(Config _ _ _ _ md) -> md) getConfig

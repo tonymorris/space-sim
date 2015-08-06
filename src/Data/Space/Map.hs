@@ -1,6 +1,7 @@
 module Data.Space.Map where
 
-
+import Control.Applicative
+import qualified Data.Vector as V
 import System.FilePath.Posix ((</>))
 import Prelude
 
@@ -10,15 +11,32 @@ data Flow a = Flow a a
 instance Functor Flow where
   fmap f (Flow a1 a2) =
     Flow (f a1) (f a2)
-    
-data SpaceMap a = SpaceMap [[Flow a]]
-  deriving (Show)
 
-readTable :: String -> [[Double]]
-readTable = map (map read) . map words . lines
+instance Applicative Flow where
+  pure a =
+    Flow a a
+  Flow f1 f2 <*> Flow a1 a2 =
+    Flow (f1 a1) (f2 a2)
+
+data SpaceMap a = SpaceMap (V.Vector (V.Vector (Flow a)))
+  deriving Show
+
+instance Functor SpaceMap where
+  fmap f (SpaceMap x) =
+    SpaceMap ((fmap . fmap . fmap $ f) x)
+
+instance Applicative SpaceMap where
+  pure =
+    SpaceMap . pure . pure . pure
+  SpaceMap f <*> SpaceMap a =
+    SpaceMap (liftA2 (liftA2 (<*>)) f a)
+
+readTable :: String -> (V.Vector (V.Vector Double))
+readTable =
+  V.fromList . map (V.fromList . map read) . map words . lines
 
 readMap :: String -> String -> SpaceMap Double
-readMap x y = SpaceMap $ zipWith (zipWith Flow) tableX tableY
+readMap x y = SpaceMap $ V.zipWith (V.zipWith Flow) tableX tableY
   where tableX = readTable x
         tableY = readTable y
 

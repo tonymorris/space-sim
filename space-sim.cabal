@@ -40,6 +40,7 @@ library
                     , bytestring
                     , syb
                     , filepath
+                    , vector
                     , raw-strings-qq >= 1
 
   ghc-options:

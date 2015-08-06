@@ -11,10 +11,9 @@ import Data.Space.State as S
 import Data.Space.Lobby as S
 import Prelude
 import System.ZMQ4.Monadic
-import Data.ByteString.Char8(pack, unpack)
+import Data.ByteString.Char8(pack)
 import Data.Aeson
 import qualified Data.ByteString.Lazy as L
-import qualified Data.ByteString as B
 
 main :: IO ()
 main =
@@ -23,15 +22,13 @@ main =
         connect sock "tcp://10.0.0.236:5558"
         send sock [] (pack lobby)
         reply <- receive sock
-        let zz = decode (L.fromChunks [reply]) :: Maybe LobbyResponse
-        liftIO . print $ zz    
-        case zz of 
+        case decode (L.fromChunks [reply]) of 
           Nothing ->
             error "crash"
-          Just (LobbyResponse n g m s) ->
-            let y = toProtocol (controlexample s)
-            in do send sock [] (pack y)
-                  liftIO $ print y
+          Just (LobbyResponse _ _ _ s) ->
+            let ctrl = toProtocol (controlexample s)
+            in do send sock [] (pack ctrl)
+                  liftIO $ print ctrl
         
 controlexample ::
   String

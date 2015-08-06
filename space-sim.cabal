@@ -37,6 +37,8 @@ library
                     , lens          >= 4.0 && < 5
                     , aeson
                     , zeromq4-haskell
+                    , bytestring
+                    , syb
 
   ghc-options:
                     -Wall

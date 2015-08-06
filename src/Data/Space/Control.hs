@@ -51,5 +51,5 @@ sendP ::
   -> [Flag]
   -> a
   -> ZMQ z ()
-sendP s x z =
-  send s x (pack (toProtocol z))
+sendP s x =
+  send s x . pack . toProtocol

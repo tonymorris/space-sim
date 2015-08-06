@@ -5,15 +5,17 @@ module Data.Space where
 
 import Prelude
 import System.ZMQ4.Monadic
-import Control.Monad (forM_)
-import Data.ByteString.Char8 (pack, unpack)
+import Data.ByteString.Char8(pack, unpack)
 import Data.Aeson
 import GHC.Generics
 import Data.Typeable
-import Data.ByteString.Lazy(ByteString)
+import qualified Data.ByteString.Lazy as L
+import qualified Data.ByteString as B
 
-c = "{ \"name\": \"=<<\", \"team\": \"hi\" }"
-
+lobby ::
+  String
+lobby =
+  "{ \"name\": \"=<<\", \"team\": \"hi\" }"
 
 data LobbyResponse =
   LobbyResponse {
@@ -28,12 +30,9 @@ instance FromJSON LobbyResponse
 main :: IO ()
 main =
     runZMQ $ do
-        reqSocket <- socket Req
-        connect reqSocket "tcp://10.0.0.236:5558"
-        send reqSocket [] (pack c)
-        reply <- receive reqSocket
-        liftIO $ putStrLn $ unwords ["Received reply:", unpack reply]    
-
-example :: ByteString
-example =
-  "{\"game\":\"game13\",\"map\":\"starmap\",\"name\":\"=<<\",\"secret\":\"3e896b3a-9487\"}"
+        s <- socket Req
+        connect s "tcp://10.0.0.236:5558"
+        send s [] (pack lobby)
+        reply <- receive s
+        let zz = decode (L.fromChunks [reply]) :: Maybe LobbyResponse
+        liftIO . print $ zz    

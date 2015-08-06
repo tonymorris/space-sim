@@ -1,6 +1,8 @@
 module Data.Space.Control where
 
 import Prelude
+import System.ZMQ4.Monadic
+import Data.ByteString.Char8(pack)
 
 data Control =
   Control
@@ -42,3 +44,12 @@ instance ToProtocol MainEngine where
 instance ToProtocol Control where
   toProtocol (Control k e r) =
     concat [k, ",", toProtocol e, ",", toProtocol r]
+
+sendP ::
+  (ToProtocol a, Sender t) =>
+  Socket z t
+  -> [Flag]
+  -> a
+  -> ZMQ z ()
+sendP s x z =
+  send s x (pack (toProtocol z))

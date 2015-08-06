@@ -26,8 +26,8 @@ main =
           Nothing ->
             error "crash"
           Just (LobbyResponse _ _ _ s) ->
-            let ctrl = toProtocol (controlexample s)
-            in do send sock [] (pack ctrl)
+            let ctrl = controlexample s
+            in do sendP sock [] ctrl
                   liftIO $ print ctrl
         
 controlexample ::

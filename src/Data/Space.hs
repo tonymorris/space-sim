@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Space(
+module Data.Space {-(
   main
 , module S
-)where
+) -} where
 
 import Data.Space.Control as S
 import Data.Space.Map as S
@@ -13,6 +13,7 @@ import Prelude
 import System.ZMQ4.Monadic
 import Data.ByteString.Char8(pack)
 import Data.Aeson
+import Control.Applicative
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString as B
 import Control.Monad
@@ -25,7 +26,7 @@ data Config =
     String -- push port
     FilePath -- maps
   deriving (Eq, Show)
-  
+
 main :: IO ()
 main = 
   run (Config "192.168.1.192" "5558" "5556" "5557" "/home/tmorris/Desktop/r/spacerace/maps")
@@ -91,7 +92,10 @@ gameLoop s m stateS controlS = do
             send controlS [] (pack command)
             gameLoop s m stateS controlS
 
-getCurrentState ::  (FromJSON b, Receiver t) => Socket z t -> ZMQ z b
+getCurrentState ::
+  (FromJSON a, Receiver t) =>
+  Socket z t
+  -> ZMQ z a
 getCurrentState stateS = do
     [_gameName, state] <- receiveMulti stateS
     case decode (L.fromChunks [state]) of
@@ -100,3 +104,39 @@ getCurrentState stateS = do
 
 getCommand :: String -> SpaceMap Double -> [Ship] -> Control
 getCommand s _ _ = Control s MainEngineOn None
+
+data Error =
+  DeleteError String
+
+data Log =
+  Log
+    String
+
+newtype SpaceT f a =
+  SpaceT
+    (Config -> f ([Log], Either Error a))
+
+instance Functor f => Functor (SpaceT f) where
+ fmap f (SpaceT s) =
+    SpaceT (fmap (fmap (fmap f)) . s)
+
+instance Applicative f => Applicative (SpaceT f) where
+  pure =
+    SpaceT . pure . pure . pure . pure
+  SpaceT f <*> SpaceT a =
+    SpaceT ((liftA2 . liftA2 . liftA2) (<*>) f a)
+
+instance Monad f => Monad (SpaceT f) where
+  return =
+    SpaceT . return . return . (,) [] . return 
+  SpaceT s >>= f =
+    SpaceT
+      (\c -> s c >>= \(l, e) -> case e of
+                                  Left r -> return (l, Left r)
+                                  Right a -> let SpaceT t = f a
+                                             in t c >>= \(m, q) -> return (l ++ m, q))
+
+type ZSpace z a =
+  SpaceT (ZMQ z) a
+
+-- type Space a = SpaceT Identity a

@@ -1,6 +1,9 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module Data.Space.Lobby where
+module Data.Space.Lobby(
+  lobby
+, LobbyResponse(..)
+) where
 
 import Prelude
 import GHC.Generics

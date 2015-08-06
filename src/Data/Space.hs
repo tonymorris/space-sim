@@ -1,12 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Space where
+module Data.Space(
+  main
+, module S
+)where
 
+import Data.Space.Control as S
+import Data.Space.Lobby as S
 import Prelude
 import System.ZMQ4.Monadic
 import Data.ByteString.Char8(pack, unpack)
 import Data.Aeson
-import Data.Space.Lobby
 import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString as B
 

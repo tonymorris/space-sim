@@ -12,8 +12,8 @@ data Control =
   deriving (Eq, Show)
 
 data MainEngine = 
-  MainEngineOn
-  | MainEngineOff
+  MainEngineOff
+  | MainEngineOn
   deriving (Eq, Show)
 
 data Rotation =

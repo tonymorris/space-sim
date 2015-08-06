@@ -21,12 +21,11 @@ import Control.Monad
 main :: IO ()
 main = runZMQ $ do
     lobby <- socket Req
-    connect lobby "tcp://10.0.0.236:5558"
+    connect lobby "tcp://192.168.1.192:5558"
     state <- socket Sub
-    connect state "tcp://10.0.0.236:5556"
+    connect state "tcp://192.168.1.192:5556"
     control <- socket Push
-    connect state "tcp://10.0.0.236:5557"
-
+    connect state "tcp://192.168.1.192:5557"
     forever $ joinAndPlay lobby state control
 
 joinAndPlay lobbyS stateS controlS = do
@@ -38,7 +37,7 @@ joinAndPlay lobbyS stateS controlS = do
         Nothing -> error "no/incorrect response from lobby"
         Just (LobbyResponse _ gameName map secret) -> do
             -- load map
-            mapData <- undefined
+            mapData <- liftIO $ loadMap "/home/tmorris/Desktop/r/spacerace/maps" "swish"
             -- Wait for the game to begin
             waitForGame (pack gameName) stateS
             gameLoop secret mapData stateS controlS
@@ -50,6 +49,7 @@ waitForGame gameName stateS = do
         else return ()
 
 gameLoop secret mapData stateS controlS = do
+    liftIO $ print "hi"
     state <- getCurrentState stateS
     case state of
         FinishedState -> return ()

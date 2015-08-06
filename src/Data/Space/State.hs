@@ -1,9 +1,12 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import Data.Aeson
-
 module Data.Space.State where
+
+import Prelude
+
+import Data.Aeson
+import Control.Monad (mzero)
 
 data Ship =
   Ship {
@@ -20,15 +23,16 @@ data Ship =
 
 instance FromJSON Ship where
     parseJSON (Object v) = Ship
-        <$> v :. "id"
-        <*> v :. "x"
-        <*> v :. "y"
-        <*> v :. "vx"
-        <*> v :. "vy"
-        <*> v :. "theta"
-        <*> v :. "omega"
-        <*> v :. "Tl"
-        <*> v :. "Tr"
+        <$> v .: "id"
+        <*> v .: "x"
+        <*> v .: "y"
+        <*> v .: "vx"
+        <*> v .: "vy"
+        <*> v .: "theta"
+        <*> v .: "omega"
+        <*> v .: "Tl" -- grr
+        <*> v .: "Tr"
+    parseJSON _ = mzero
 
 data GameState
   = FinishedState
@@ -37,10 +41,10 @@ data GameState
 
 instance FromJSON GameState where
     parseJSON (Object v) = do
-        state <- v :. "state"
+        state <- v .: "state"
         case state of
-            "running" -> do
-                players <- v:. "data"
+            (String "running") -> do
+                players <- v .: "data"
                 return (RunningState players)
             _ -> return FinishedState
     parseJSON _ = mzero

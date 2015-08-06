@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Data.Space.State where
 
@@ -7,6 +8,8 @@ import Prelude
 
 import Data.Aeson
 import Control.Monad (mzero)
+import Text.RawString.QQ
+import qualified Data.ByteString.Lazy as L
 
 data Ship =
   Ship {
@@ -48,3 +51,36 @@ instance FromJSON GameState where
                 return (RunningState players)
             _ -> return FinishedState
     parseJSON _ = mzero
+
+exampleRunningState, exampleFinishedState, exampleShip :: L.ByteString
+
+exampleFinishedState = [r|{
+    "state": "finished"
+}|]
+
+exampleRunningState = [r|{
+    "state": "running",
+    "data": [{
+        "id": "dan",
+        "x": 10,
+        "y": 10,
+        "vx": 10,
+        "vy": 10,
+        "theta": 10,
+        "omega": 10,
+        "Tl": 1,
+        "Tr": -1
+    }]
+}|]
+
+exampleShip = [r|{
+    "id": "dan",
+    "x": 10,
+    "y": 10,
+    "vx": 10,
+    "vy": 10,
+    "theta": 10,
+    "omega": 10,
+    "Tl": 1,
+    "Tr": -1
+}|]

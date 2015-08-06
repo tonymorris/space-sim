@@ -1,6 +1,7 @@
 module Data.SpaceMap where
 
 import System.IO (readFile)
+import Prelude
 
 data Flow a = Flow a a
   deriving (Show)

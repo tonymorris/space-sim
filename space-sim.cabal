@@ -50,7 +50,8 @@ library
                     src
 
   exposed-modules:
-                    Data.Space
+                      Data.Space
+                    , Data.Space.Lobby
 
 test-suite doctests
   type:

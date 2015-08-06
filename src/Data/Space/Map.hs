@@ -6,6 +6,11 @@ import Prelude
 
 data Flow a = Flow a a
   deriving (Show)
+
+instance Functor Flow where
+  fmap f (Flow a1 a2) =
+    Flow (f a1) (f a2)
+    
 data SpaceMap a = SpaceMap [[Flow a]]
   deriving (Show)
 

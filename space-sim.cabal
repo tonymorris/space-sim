@@ -39,6 +39,7 @@ library
                     , zeromq4-haskell
                     , bytestring
                     , syb
+                    , raw-strings-qq >= 1
 
   ghc-options:
                     -Wall

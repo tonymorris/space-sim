@@ -17,9 +17,22 @@ import qualified Data.ByteString as B
 main :: IO ()
 main =
     runZMQ $ do
-        s <- socket Req
-        connect s "tcp://10.0.0.236:5558"
-        send s [] (pack lobby)
-        reply <- receive s
+        sock <- socket Req
+        connect sock "tcp://10.0.0.236:5558"
+        send sock [] (pack lobby)
+        reply <- receive sock
         let zz = decode (L.fromChunks [reply]) :: Maybe LobbyResponse
         liftIO . print $ zz    
+        case zz of 
+          Nothing ->
+            error "crash"
+          Just (LobbyResponse n g m s) ->
+            let y = toProtocol (controlexample s)
+            in do send sock [] (pack y)
+                  liftIO $ print y
+        
+controlexample ::
+  String
+  -> Control
+controlexample k =
+  Control k MainEngineOn AntiClock

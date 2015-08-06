@@ -13,7 +13,7 @@ module Data.Space.Lobby(
 ) where
 
 import Control.Category(Category(id))
-import Control.Lens
+import Control.Lens(Optic', lens)
 import Data.Eq(Eq)
 import Data.Functor(Functor)
 import Data.String(String)

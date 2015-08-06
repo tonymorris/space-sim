@@ -3,7 +3,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 module Data.Space.Lobby(
-  lobby
+  teamInfo
 , LobbyResponse(..)
 , AsLobbyResponse(..)
 , AsName(..)
@@ -22,10 +22,10 @@ import Data.Aeson(FromJSON)
 import GHC.Generics(Generic)
 import Prelude(Show)
 
-lobby ::
+teamInfo ::
   String
-lobby =
-  "{ \"name\": \"=<<\", \"team\": \"hi\" }"
+teamInfo =
+  "{ \"name\": \"tony\", \"team\": \"=<<\" }"
 
 data LobbyResponse =
   LobbyResponse {

@@ -25,7 +25,7 @@ import Prelude(Show)
 teamInfo ::
   String
 teamInfo =
-  "{ \"name\": \"tony\", \"team\": \"=<<\" }"
+  "{ \"name\": \"=<<\", \"team\": \"tony\" }"
 
 data LobbyResponse =
   LobbyResponse {

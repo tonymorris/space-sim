@@ -29,6 +29,7 @@ main = runZMQ $ do
     forever $ joinAndPlay lobby state control
 
 joinAndPlay lobbyS stateS controlS = do
+    liftIO $ print "joinAndPlay"
     send lobbyS [] (pack S.teamInfo)
     reply <- receive lobbyS
     let lobbyResponse = decode (L.fromChunks [reply]) :: Maybe LobbyResponse
@@ -37,25 +38,26 @@ joinAndPlay lobbyS stateS controlS = do
         Nothing -> error "no/incorrect response from lobby"
         Just (LobbyResponse _ gameName map secret) -> do
             -- load map
-            mapData <- liftIO $ loadMap "/home/tmorris/Desktop/r/spacerace/maps" "swish"
+            -- mapData <- liftIO $ loadMap "/home/tmorris/Desktop/s/spacerace/maps" "swish"
             -- Wait for the game to begin
-            waitForGame (pack gameName) stateS
-            gameLoop secret mapData stateS controlS
+            --waitForGame (pack gameName) stateS
+            gameLoop secret undefined stateS controlS
 
 waitForGame gameName stateS = do
+    liftIO $ print "waitForGame"
     [game, _state] <- receiveMulti stateS
+    liftIO $ print (gameName, game)
     if gameName /= game
         then waitForGame gameName stateS
-        else return ()
+        else liftIO $ print "joining game"
 
 gameLoop secret mapData stateS controlS = do
-    liftIO $ print "hi"
-    state <- getCurrentState stateS
+    {-state <- getCurrentState stateS
     case state of
-        FinishedState -> return ()
-        RunningState ships -> do
-            let command = toProtocol $ getCommand secret mapData ships
-            liftIO $ print command
+        FinishedState -> liftIO $ print "finished game"
+        RunningState ships -> do-}
+            let command = toProtocol $ getCommand secret mapData undefined
+            --liftIO $ print command
             send controlS [] (pack command)
             gameLoop secret mapData stateS controlS
 

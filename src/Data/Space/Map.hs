@@ -1,4 +1,4 @@
-module Data.SpaceMap where
+module Data.Space.Map where
 
 import System.IO (readFile)
 import System.FilePath.Posix ((</>))

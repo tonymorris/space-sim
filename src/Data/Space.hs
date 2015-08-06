@@ -6,6 +6,8 @@ module Data.Space(
 )where
 
 import Data.Space.Control as S
+import Data.Space.Map as S
+import Data.Space.State as S
 import Data.Space.Lobby as S
 import Prelude
 import System.ZMQ4.Monadic

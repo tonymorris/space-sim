@@ -39,6 +39,7 @@ library
                     , zeromq4-haskell
                     , bytestring
                     , syb
+                    , filepath
 
   ghc-options:
                     -Wall
@@ -54,6 +55,7 @@ library
                     , Data.Space.Lobby
                     , Data.Space.Control
                     , Data.Space.State
+                    , Data.Space.Map
 
 test-suite doctests
   type:

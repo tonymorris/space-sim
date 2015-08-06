@@ -17,23 +17,41 @@ import qualified Data.ByteString.Lazy as L
 import qualified Data.ByteString as B
 import Control.Monad
 
+data Config =
+  Config
+    String -- host
+    String -- request port
+    String -- sub port
+    String -- push port
+    FilePath -- maps
+  deriving (Eq, Show)
+  
 main :: IO ()
-main = runZMQ $ do
-    lobby <- socket Req
-    connect lobby "tcp://192.168.1.192:5558"
-    state <- socket Sub
-    connect state "tcp://192.168.1.192:5556"
-    control <- socket Push
-    connect state "tcp://192.168.1.192:5557"
-    forever $ joinAndPlay lobby state control
+main = 
+  run (Config "192.168.1.192" "5558" "5556" "5557" "/home/tmorris/Desktop/r/spacerace/maps")
+
+run :: Config -> IO ()
+run (Config c rp sp pp mapdir) =
+  let connectstring p = "tcp://" ++ c ++ ":" ++ p
+      connectto s = connect s . connectstring
+  in
+    runZMQ $ do
+      lobby <- socket Req
+      connectto lobby rp
+      state <- socket Sub
+      connect state sp
+      control <- socket Push
+      connect state pp
+      forever $ joinAndPlay lobby state control mapdir
 
 joinAndPlay ::
   (Sender t, Sender s, Receiver t, Receiver r) =>
   Socket z t
   -> Socket z r
   -> Socket z s
+  -> FilePath
   -> ZMQ z ()
-joinAndPlay lobbyS stateS controlS = do
+joinAndPlay lobbyS stateS controlS mapdir = do
     send lobbyS [] (pack S.teamInfo)
     reply <- receive lobbyS
     let lobbyResponse = decode (L.fromChunks [reply]) :: Maybe LobbyResponse
@@ -42,7 +60,7 @@ joinAndPlay lobbyS stateS controlS = do
         Nothing -> error "no/incorrect response from lobby"
         Just (LobbyResponse _ gameName _ s) -> do
             -- load map
-            m <- liftIO $ loadMap "/home/tmorris/Desktop/r/spacerace/maps" "swish"
+            m <- liftIO $ loadMap mapdir "swish"
             -- Wait for the game to begin
             waitForGame (pack gameName) stateS
             gameLoop s m stateS controlS

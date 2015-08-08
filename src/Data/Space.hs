@@ -25,7 +25,7 @@ main = runZMQ $ do
     state <- socket Sub
     connect state "tcp://192.168.1.192:5556"
     control <- socket Push
-    connect state "tcp://192.168.1.192:5557"
+    connect control "tcp://192.168.1.192:5557"
     forever $ joinAndPlay lobby state control
 
 joinAndPlay lobbyS stateS controlS = do

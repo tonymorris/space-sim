@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
-module Data.Space.State where
+module Spacerace.State where
 
 import Prelude
 

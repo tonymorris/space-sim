@@ -1,4 +1,4 @@
-module Data.Space.Map where
+module Spacerace.Map where
 
 import Control.Applicative
 import qualified Data.Vector as V

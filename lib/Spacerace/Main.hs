@@ -1,15 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Data.Space(
+module Spacerace.Main (
   main
 , module S
-)where
+) where
 
-import Data.Space.Control as S
-import Data.Space.Map as S
-import Data.Space.State as S
-import Data.Space.Lobby as S
-import Data.Space.State as S
+import Spacerace.Control as S
+import Spacerace.Map as S
+import Spacerace.State as S
+import Spacerace.Lobby as S
+import Spacerace.State as S
 import Prelude
 import System.ZMQ4.Monadic
 import Data.ByteString.Char8(pack)

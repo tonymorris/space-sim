@@ -1,4 +1,4 @@
-module Data.Space.Control where
+module Spacerace.Control where
 
 import Prelude
 import System.ZMQ4.Monadic

@@ -2,7 +2,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Data.Space.Lobby(
+module Spacerace.Lobby(
   teamInfo
 , LobbyResponse(..)
 , AsLobbyResponse(..)

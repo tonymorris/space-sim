@@ -12,18 +12,38 @@ description:
   .
   Space Simulator
 
-homepage:           https://github.com/NICTA/space-sim
-bug-reports:        https://github.com/NICTA/space-sim/issues
+homepage:           https://github.com/tonymorris/space-sim
+bug-reports:        https://github.com/tonymorris/space-sim/issues
 cabal-version:      >= 1.10
 build-type:         Custom
 extra-source-files: changelog
 
 source-repository   head
   type:             git
-  location:         git@github.com:NICTA/space-sim.git
+  location:         git@github.com:tonymorris/space-sim.git
 
 flag                small_base
   description:      Choose the new, split-up base package.
+
+executable game
+  default-language:
+                    Haskell2010
+
+  build-depends:
+                      base          >= 4   && < 5
+                    , space-sim
+
+  hs-source-dirs:
+                    src
+
+  main-is:
+                    Main.hs
+
+  ghc-options:
+                    -Wall -O2
+
+  default-extensions:
+                    NoImplicitPrelude
 
 library
   default-language:
@@ -50,14 +70,14 @@ library
                     NoImplicitPrelude
 
   hs-source-dirs:
-                    src
+                    lib
 
   exposed-modules:
-                      Data.Space
-                    , Data.Space.Lobby
-                    , Data.Space.Control
-                    , Data.Space.State
-                    , Data.Space.Map
+                      Spacerace.Main
+                    , Spacerace.Lobby
+                    , Spacerace.Control
+                    , Spacerace.State
+                    , Spacerace.Map
 
 test-suite doctests
   type:
